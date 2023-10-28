@@ -1,8 +1,9 @@
 # VSD-HDP
 VLSI SYSTEM DESIGN - HARDWARE DESIGN PROGRAM <br />
 This repoitory includes the entire ASIC flow from RTL Design to GDSII along with RTL Verification, Logic Synthesis, Post synthesis STA Analysis, Floor Planning, Placement, CTS, Routing.<br />
-**DAY 0** : Created GIT Hub repo.<br />
-**DAY 1** : Tools Installation.<br />
+**WEEK 0** <br />
+**1.** Creating GIT Hub repo.<br />
+**2.** Tools Installation.<br />
 For Tools Installation OS should be ubuntu 20.04LTS and set the Hardware requirements as 4GB RAM, 70GB HDD.<br />
 ## TOOLS TO BE INSTALLED:<br />
 *__Yosys :__*<br />
@@ -22,6 +23,7 @@ $ sudo make install
 ![yosys](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/b2661fac-8bf2-4942-9c55-4d654406f7ea)
 
 *__Iverilog :__*
+It is a simulator tool used for simulating the design. <br />
 ```
 sudo apt-get install iverilog
 ```
@@ -107,6 +109,27 @@ cd OpenLane
 make
 make test
 ```
+**WEEK 1** <br />
+**1.** Introduction to Verilog RTL Design and Synthesis.<br />
+**RTL Design** : RTL Design is checked for adherence to spec by simulating the design. The Design is a verilog code(or a set of verilog codes) which has the intended functionality to meet the requirements.<br />
+**Test Bench** : Test bench is the setup to apply stimulus (test_vectors) to the design to check its functionality.<br />
+**2.** Introduction to Open source Iverilog Simulator.<br />
+Simulator looks for the changes on the input.<br />
+***NOTE*** : **If no change in the input,no change in the output**. <br />
+![iverilog simulation flow](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/9946ed21-9aaa-4d89-9fcd-7d31fea3ff96)
+**3.** Implementing an example design 2x1 multiplexer using Iverilog and gtkwave.<br />
+The Design and Testbench are the stimulus to the simulator which generates a vcd (value change dump) file as output. To obtain the waveform, this vcd file is processed by the gtkwave to verify the funcionality of the design.<br />
+The design and sky130 library files are cloned from the below repository : <br >
+<https://github.com/kunalg123/sky130RTLDesignAndSynthesisWorkshop.git> <br />
+**syntax for iverilog and gtkwave**
+```
+iverilog good_mux.v tb_good_mux.v
+./a.out //generates vcd file
+gtkwave tb_good_mux.vcd
+```
+![gtkwave_2x1mux](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/f342e2b9-d749-4697-8f70-88820541475b)
+**4.** Introduction to Yosys and Logic Syntthesis.<br />
+**5.** Implementing an example design 2x1 multiplexer using Yosys and sky130 PDKs.<br />
 
 
 
