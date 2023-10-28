@@ -1,6 +1,6 @@
 # VSD-HDP
 VLSI SYSTEM DESIGN - HARDWARE DESIGN PROGRAM <br />
-This repoitory includes the entire ASIC flow from RTL Design, RTL Verification, Logic Synthesis, Post synthesis STA Analysis, Floor Planning, Placement, CTS, Routing.<br />
+This repoitory includes the entire ASIC flow from RTL Design to GDSII along with RTL Verification, Logic Synthesis, Post synthesis STA Analysis, Floor Planning, Placement, CTS, Routing.<br />
 **DAY 0** : Created GIT Hub repo.<br />
 **DAY 1** : Tools Installation.<br />
 For Tools Installation OS should be ubuntu 20.04LTS and set the Hardware requirements as 4GB RAM, 70GB HDD.<br />
