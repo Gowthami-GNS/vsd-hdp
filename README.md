@@ -264,7 +264,7 @@ gtkwave tb_dff_asyncres_syncres.vcd
 ![dff_async_sync_simul](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/10be1146-7b02-483a-b509-38744dc3fbaa)
 ![asyncres_syncres_netlist](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/f56f4c79-7b00-4907-b668-82cc92dfc3d3)
 
-***Verilog code for mult2.v***:
+***Verilog code for mult2***:
 ```
 module mul2 (input [2:0] a, output [3:0] y);
         assign y = a * 2;
@@ -282,7 +282,7 @@ endmodule
 ```
 ![mult2_netlist](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/9a8f8fb1-7b46-40ec-8539-2849d580dbb2)
 
-***Verilog code for mult8.v***:
+***Verilog code for mult8***:
 ```
 module mult8 (input [2:0] a , output [5:0] y);
         assign y = a * 9;
@@ -301,6 +301,72 @@ endmodule
 ![mult8_netlist](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/e4bac068-b8c6-4ba7-a14c-afc5902c0532)
 
 **DAY 3**: Combinational and sequential optimizations.
+Combinational logic optimization is the squeezing the logic to get the most optimized design in terms of Area and Power savings.<br />
+There are two types of optimizations : <br >
+1. Constant proagaton (Direct propagation). <br />
+2. Boolean Logic Optimization. <br />
+Sequential logic optimizations are of 2 types: <br />
+1. Basic - Sequential constant Propagation : constant value is propagated throghout the flop. <br /> 
+2. Advanced - State Optimization, Retiming, Sequential logic cloning. <br />
+**Lab 06** : Combinational Logic optimzations <br />
+1. **opt_check.v** : <br />
+```
+module opt_check (input a , input b , output y);
+        assign y = a?b:0;
+endmodule
+
+Synthesis :
+yosys> read_liberty -lib <lib_path> <filename> <br />
+yosys> read_verilog good_mux.v <br />
+yosys> synth -top <top_module>. //This indicates which module we are synthesizing.<br />
+yosys> opt_clean -purge //command used for constant propagation and other optimization techniques. <br />
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+```
+![opt_check](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/03ab584f-f244-4c82-913b-f32aabba5b64)
+
+2. **opt_check2.v** : <br />
+```
+module opt_check2 (input a , input b , output y);
+        assign y = a?1:b;
+endmodule
+```
+![opt_check2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/84520072-dd59-4f23-aa7f-7beaaa2496ee)
+
+3. **opt_check3.v** : <br />
+```
+module opt_check3 (input a , input b, input c , output y);
+        assign y = a?(c?b:0):0;
+endmodule
+```
+![opt3](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/ae2ee7af-869f-416d-95a2-51bf76277be4)
+
+4. **opt_check4.v** : <br />
+```
+module opt_check4 (input a , input b , input c , output y);
+ assign y = a?(b?(a & c ):c):(!c);
+ endmodule
+```
+![opt4](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/d5ccafba-344a-48e6-b23e-f36f8e5d5f15)
+
+5. **multiple_module_opt.v** : <br />
+```
+module sub_module1(input a , input b , output y);
+ assign y = a & b;
+endmodule
+module sub_module2(input a , input b , output y);
+ assign y = a^b;
+endmodule
+module multiple_module_opt(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+sub_module1 U1 (.a(a) , .b(1'b1) , .y(n1));
+sub_module2 U2 (.a(n1), .b(1'b0) , .y(n2));
+sub_module2 U3 (.a(b), .b(d) , .y(n3));
+assign y = c | (b & n1);
+endmodule
+```
+![mm](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/2700ef06-a3be-4308-ab91-c34da7b7674c)
+
+
 
         
 
