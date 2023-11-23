@@ -530,6 +530,8 @@ endmodule
 ```
 ![c_opt2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/577cfd3d-6278-4129-8644-d4f9cb468cab)
 
+**Day 4** : GLS, blocking vs non-blocking and synthesis-simulation mismatch <br />
+
 
 
 
