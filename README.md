@@ -190,19 +190,19 @@ operating_conditions ("tt_025C_1v80") {
 write_verilog noattr multiple_modules_hier.v <br />
 flatten is the command to write flat netlist.<br />
 write_verilog noattr multiple_modules_flat.v <br />
-**Hierarchial synthesis vs Flat synthesis**:
-In Hierarchial synthesis, hierarchy is preserved.
+**Hierarchial synthesis vs Flat synthesis**: <br />
+In Hierarchial synthesis, hierarchy is preserved. <br />
 ![hiervsflat](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/cc9b6566-a0fb-4653-a2dc-17278106a1c3)
-Hierarchial synthesis:
+Hierarchial synthesis: <br />
 ![hier_net](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/853c5316-1a84-46b0-872b-bec45e2495c5)
 ![submodule1](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/32761861-e0d4-4883-a71c-92fc5e3a3131)     ![submodule2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/2e17e4b1-79fd-4c53-9cb8-62fc60e457c8)
 
-Flat synthesis:
+Flat synthesis: <br />
 ![flatnet](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/1e51d2c8-0631-4243-9b2e-24ed95b6bf86)
-To synthesis any submodule we give synth -top <module_name>
-**2.** : Various Flat coding styles and optimization.<br />
-Flops are the storage elements introdued in between combnational ciruits to avoid the propagation og glitches.
-Asynchronous reset : The reset is independant of clock.
+To synthesis any submodule we give synth -top <module_name> <br />
+**2.** : **Various Flop coding styles and optimization**.<br />
+Flops are the storage elements introdued in between combnational ciruits to avoid the propagation og glitches. <br />
+Asynchronous reset : The reset is independant of clock. <br />
 ***Verilog code of D Flipflop with async reset, simulation and synthesis***:
 ```
 module dff_asyncres ( input clk ,  input async_reset , input d , output reg q );
@@ -300,14 +300,14 @@ endmodule
 ```
 ![mult8_netlist](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/e4bac068-b8c6-4ba7-a14c-afc5902c0532)
 
-**DAY 3**: Combinational and sequential optimizations.
-Combinational logic optimization is the squeezing the logic to get the most optimized design in terms of Area and Power savings.<br />
-There are two types of optimizations : <br >
+**DAY 3**: Combinational and sequential optimizations.<br />
+**Combinational logic optimization** : is the squeezing the logic to get the most optimized design in terms of Area and Power savings. It is of two types.<br />
 1. Constant proagaton (Direct propagation). <br />
 2. Boolean Logic Optimization. <br />
-Sequential logic optimizations are of 2 types: <br />
+**Sequential logic optimizations** : are of 2 types: <br />
 1. Basic - Sequential constant Propagation : constant value is propagated throghout the flop. <br /> 
 2. Advanced - State Optimization, Retiming, Sequential logic cloning. <br />
+
 **Lab 06** : Combinational Logic optimzations <br />
 1. **opt_check.v** : <br />
 ```
@@ -363,8 +363,174 @@ sub_module2 U2 (.a(n1), .b(1'b0) , .y(n2));
 sub_module2 U3 (.a(b), .b(d) , .y(n3));
 assign y = c | (b & n1);
 endmodule
+
+synthesis:
+yosys> read_liberty -lib <lib_path> <filename> <br />
+yosys> read_verilog mutilple_module_opt.v <br />
+yosys> synth -top <top_module>. //This indicates which module we are synthesizing.<br />
+yosys> flatten
+yosys> write_verilog mutilple_module_opt_flat.v
+yosys> opt_clean -purge //command used for constant propagation and other optimization techniques. <br />
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
 ```
 ![mm](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/2700ef06-a3be-4308-ab91-c34da7b7674c)
+
+6. **multiple_module_opt2.v** <br />
+```
+module sub_module(input a , input b , output y);
+ assign y = a & b;
+endmodule
+module multiple_module_opt2(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+sub_module U1 (.a(a) , .b(1'b0) , .y(n1));
+sub_module U2 (.a(b), .b(c) , .y(n2));
+sub_module U3 (.a(n2), .b(d) , .y(n3));
+sub_module U4 (.a(n3), .b(n1) , .y(y));
+endmodule
+```
+![mmo2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/cdb3630c-51e3-431e-a46c-6249f662e042)
+
+**Lab 07**: **Sequential logic optimization**. <br />
+1. **dff_const1.v**: <br />
+```
+module dff_const1(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+        if(reset)
+                q <= 1'b0;
+        else
+                q <= 1'b1;
+end
+endmodule
+
+synthesis:
+yosys> read_liberty -lib <lib_path> <filename> <br />
+yosys> read_verilog dff_const1.v <br />
+yosys> synth -top <top_module>. //This indicates which module we are synthesizing.<br />
+yosys> dfflibmap -liberty <lib_path> <filename> //For seq ckts only. <br />
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> show
+```
+![dffc1](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/54a08461-2100-4a44-aed3-99f913e7bc0e)
+![dff_c1](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/383c4c62-26a0-4e49-a053-9745eaeadf9c)
+
+2. **dff_const2.v**: <br />
+```                                                                                                                          1,1            All
+module dff_const2(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+        if(reset)
+                q <= 1'b1;
+        else
+                q <= 1'b1;
+end
+endmodule
+```
+![dffc2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/f2ae1c06-83d0-4c79-8d52-84616049cc7a)
+![dff_c2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/642e79bc-ac97-4a3f-97f9-8ecaef405c09)
+
+3. **dff_const3.v** : <br />
+```module dff_const3(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+        if(reset)
+        begin
+                q <= 1'b1;
+                q1 <= 1'b0;
+        end
+        else
+        begin
+                q1 <= 1'b1;
+                q <= q1;
+        end
+end
+endmodule
+```
+![dffc3](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/a1caf486-44eb-4f66-8e8c-3befd1378f1e)
+![dff_c3](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/80b18898-a432-49ac-9691-1c41c2920f0a)
+
+4. **dff_const4.v** : <br />
+```
+module dff_const4(input clk, input reset, output reg q);
+reg q1;
+always @(posedge clk, posedge reset)
+begin
+        if(reset)
+        begin
+                q <= 1'b1;
+                q1 <= 1'b1;
+        end
+        else
+        begin
+                q1 <= 1'b1;
+                q <= q1;
+        end
+end
+endmodule
+```
+![dffc4](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/70035dab-1bc2-42c2-8969-7edf5b505ec3)
+![dff_c4](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/58a7a60b-0dd1-48de-a773-d2f4320f56eb)
+
+5. **dff_const5.v** : <br />
+```
+module dff_const5(input clk, input reset, output reg q);
+reg q1;
+always @(posedge clk, posedge reset)
+begin
+        if(reset)
+        begin
+                q <= 1'b0;
+                q1 <= 1'b0;
+        end
+        else
+        begin
+                q1 <= 1'b1;
+                q <= q1;
+        end
+end
+endmodule
+```
+![dffc5](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/1b496891-5e79-4591-92d5-7ed7fca523ec)
+![dff_c5](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/5e7bf6b9-c80f-4c09-8d7d-a11068690410)
+
+**Sequential optimization for unused outputs** :
+Ex: 1. counter_opt.v <br />
+```
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = count[0];
+
+always @(posedge clk ,posedge reset)
+begin
+        if(reset)
+                count <= 3'b000;
+        else
+                count <= count + 1;
+end
+endmodule
+```
+![count_opt](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/1569f8e4-38f3-4e27-a6f6-a189ecff151e)
+
+2. counter_opt2.v <br />
+```
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = (count[2:0] == 3'b100);
+
+always @(posedge clk ,posedge reset)
+begin
+        if(reset)
+                count <= 3'b000;
+        else
+                count <= count + 1;
+end
+endmodule
+```
+![c_opt2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/577cfd3d-6278-4129-8644-d4f9cb468cab)
+
+
 
 
 
