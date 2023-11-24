@@ -531,6 +531,72 @@ endmodule
 ![c_opt2](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/577cfd3d-6278-4129-8644-d4f9cb468cab)
 
 **Day 4** : GLS, blocking vs non-blocking and synthesis-simulation mismatch <br />
+***GLS (Gate leve Simulation)*** : Running the testbench with netlist as Design under test. We run GLS to verify the correctness of design after synthesis and also to ensure that the timing of the design is met. <br />
+**GLS using iverilog**: <br />
+![gls](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/50d0ff86-f82e-447b-81a2-fad675d9e319)
+
+***Synthesis - Siualtion mismatch*** : can happen because of missing sensitivity list, blocking vs non blocking assignments, non standard verilog coding. <br />
+**Lab** : ****ternary_operator_mux.v***
+```
+module ternary_operator_mux (input i0 , input i1 , input sel , output y);
+	assign y = sel?i1:i0;
+endmodule
+
+simulation:
+iverilog <file_name>.v <tb_filename>.v <br />
+./a.out <br />
+gtkwave <tb_filename>.vcd <br />
+
+synthesis:
+yosys> read_liberty -lib <lib_path> <filename> <br />
+yosys> read_verilog ternary_opertor_mux.v <br />
+yosys> synth -top <top_module>. //This indicates which module we are synthesizing.<br />
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib <br />
+yosys> write_verilog -noattr ternary_opertor_mux_net.v <br />
+yosys> show <br />
+
+GLS:
+iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v <br />
+./a.out
+gtkwave tb_ternary_operator_mux.vcd <br />
+```
+![tom](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/ecb0b69f-dbf0-4ed3-9450-2fa6e25d0e73)
+![toms](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/762e9473-5b9c-4940-aa5f-a4b616fa93c4)
+![glstom](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/47303f98-4dbd-4952-bd05-c9a15a723287)
+
+***bad_mux.v***
+```
+module bad_mux (input i0 , input i1 , input sel , output reg y);
+always @ (sel)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+```
+![badmussimul](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/017fcae7-6728-4a80-9de1-c703d8031081)
+![badmux](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/7a0138ca-5120-4631-8f7a-18b452a40b02)
+![badmuxgls](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/05aa30ff-cdb9-488b-8bec-508076907a58)
+
+***blocking_caveat.v***
+```
+module blocking_caveat (input a , input b , input  c, output reg d); 
+reg x;
+always @ (*)
+begin
+	d = x & c;
+	x = a | b;
+end
+endmodule
+```
+![blocking](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/bc0e4416-c6c7-43af-ae6e-0b756f50449f)
+![bc](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/6017005e-c09b-4927-b0ae-cc005e436461)
+![bcgls](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/32371e6f-276a-4d41-96a1-3c2c912f2302)
+
+
+
 
 
 
