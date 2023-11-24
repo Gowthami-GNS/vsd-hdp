@@ -580,7 +580,7 @@ endmodule
 ![badmux](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/7a0138ca-5120-4631-8f7a-18b452a40b02)
 ![badmuxgls](https://github.com/Gowthami-GNS/vsd-hdp/assets/22699982/05aa30ff-cdb9-488b-8bec-508076907a58)
 
-***blocking_caveat.v***
+***blocking_caveat.v*** : synthesis - simulation mismatch is due to blocking statement. <br />
 ```
 module blocking_caveat (input a , input b , input  c, output reg d); 
 reg x;
